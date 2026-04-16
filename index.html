@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROYECTO LEVNEG</title>
+    <link rel="icon" href="Captura_de_pantalla_2026-04-15_224952-removebg-preview.ico">
+    <style>
+        /* Paleta de colores estricta */
+        :root {
+            --color-1: #FF3388; /* Acentos principales / Eco */
+            --color-2: #CC33AA; /* Hover states / Líquido */
+            --color-3: #9933CC; /* Bordes claros / Vidrio */
+            --color-4: #6622BB; /* Paneles secundarios / Roca */
+            --color-5: #4411AA; /* Fondo principal App */
+            --color-6: #3344BB; /* Fondo barras de herramientas */
+            --color-7: #3366CC; /* Inputs / Fondos de controles */
+            --color-8: #3388DD; /* Bordes inputs / Agua */
+            --color-9: #33AAEE; /* Textos resaltados / Reverberación */
+        }
+
+        /* Estilos generales Modernos */
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, var(--color-5));
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+            color: #ffffff;
+        }
+
+        .app-window {
+            width: 100%;
+            max-width: 1300px;
+            height: 90vh;
+            background-color: var(--color-5);
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--color-4);
+        }
+
+        /* Barra de Título y Menús */
+        .title-bar {
+            background: linear-gradient(90deg, var(--color-4), var(--color-6));
+            color: white;
+            padding: 12px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            letter-spacing: 0.5px;
+            justify-content: center;
+        }
+
+        .menu-bar, .tool-bar {
+            background-color: var(--color-6);
+            padding: 8px 20px;
+            font-size: 13px;
+            display: flex;
+            gap: 20px;
+            color: var(--color-9);
+        }
+        
+        .menu-bar span {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .menu-bar span:hover {
+            color: #ffffff;
+        }
+
+        .tool-bar {
+            padding: 10px 20px;
+            gap: 10px;
+            border-bottom: 1px solid var(--color-4);
+            background-color: rgba(51, 68, 187, 0.5); /* var(--color-6) con transparencia */
+        }
+
+        .tool-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            color: var(--color-9);
+        }
+        .tool-button:hover {
+            background-color: var(--color-4);
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        /* Contenedor Principal */
+        .main-workspace {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* Panel Izquierdo (Librería/Controles Acústicos) */
+        .left-panel {
+            width: 280px;
+            background-color: rgba(68, 17, 170, 0.4); /* var(--color-5) oscurecido */
+            border-right: 1px solid var(--color-4);
+            display: flex;
+            flex-direction: column;
+            font-size: 13px;
+            overflow-y: auto;
+        }
+
+        /* Scrollbar personalizado */
+        .left-panel::-webkit-scrollbar { width: 8px; }
+        .left-panel::-webkit-scrollbar-track { background: transparent; }
+        .left-panel::-webkit-scrollbar-thumb { background: var(--color-4); border-radius: 4px; }
+
+        .panel-header {
+            background-color: var(--color-4);
+            color: white;
+            padding: 12px 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .config-section {
+            padding: 15px;
+            border-bottom: 1px solid rgba(102, 34, 187, 0.5); /* var(--color-4) con transparencia */
+        }
+
+        .config-section label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--color-9);
+        }
+
+        .config-section select, .config-section input[type="number"], .config-section input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 13px;
+            border: 1px solid var(--color-7);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-sizing: border-box;
+            background-color: var(--color-6);
+            color: #ffffff;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .config-section select:focus, .config-section input[type="number"]:focus {
+            border-color: var(--color-9);
+        }
+
+        .btn-record {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--color-7);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-record:hover {
+            background-color: var(--color-8);
+        }
+        .btn-record.recording {
+            background-color: var(--color-1);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 51, 136, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 51, 136, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 51, 136, 0); }
+        }
+
+        .audio-player {
+            width: 100%;
+            height: 40px;
+            margin-top: 10px;
+            border-radius: 20px;
+        }
+
+        /* Visor de Simulación (Centro) */
+        .viewport-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #0b0b1a; /* Fondo muy oscuro para contraste */
+            position: relative;
+        }
+
+        .viewport-title {
+            background-color: var(--color-6);
+            color: var(--color-9);
+            padding: 8px 15px;
+            font-size: 12px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--color-4);
+        }
+
+        .canvas-container {
+            flex-grow: 1;
+            position: relative;
+            /* Cuadrícula moderna */
+            background-image: 
+                linear-gradient(rgba(102, 34, 187, 0.2) 1px, transparent 1px), /* var(--color-4) */
+                linear-gradient(90deg, rgba(102, 34, 187, 0.2) 1px, transparent 1px);
+            background-size: 40px 40px;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Panel Inferior (Controles de Ejecución) */
+        .bottom-panel {
+            background-color: var(--color-5);
+            border-top: 1px solid var(--color-4);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 13px;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-control {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background-color: var(--color-4);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .btn-control:hover {
+            background-color: var(--color-3);
+            transform: translateY(-2px);
+        }
+        .btn-control.run { 
+            background-color: var(--color-1); 
+        }
+        .btn-control.run:hover { 
+            background-color: var(--color-2); 
+        }
+
+        .time-display {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--color-4);
+            color: var(--color-9);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            width: 100px;
+            text-align: right;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .status-bar {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid var(--color-4);
+            padding: 8px 20px;
+            font-size: 12px;
+            color: var(--color-9);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Ventana de resultados superpuesta */
+        .results-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(68, 17, 170, 0.85); /* var(--color-5) con transparencia */
+            border: 1px solid var(--color-3);
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            pointer-events: none;
+            display: none;
+            color: white;
+            line-height: 1.5;
+        }
+        .results-overlay b {
+            color: var(--color-9);
+            font-size: 15px;
+            display: block;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--color-4);
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-window">
+    <div class="title-bar">
+        <h1><span>PROYECTO LEVNEG</span></h1>
+        <span></span>
+    </div>
+
+    <div class="menu-bar">
+        <span>File</span><span>Edit</span><span>View</span><span>Execute</span><span>Stats</span><span>Tools</span><span>Help</span>
+    </div>
+    <div class="tool-bar">
+        <div class="tool-button">📄<br>New</div>
+        <div class="tool-button">📂<br>Open</div>
+        <div class="tool-button">💾<br>Save</div>
+        <div style="border-left: 1px solid var(--color-4); margin: 0 5px;"></div>
+        <div class="tool-button">📊<br>Stats</div>
+        <div class="tool-button">🌐<br>Ortho</div>
+    </div>
+
+    <div class="main-workspace">
+        <div class="left-panel">
+            <div class="panel-header">Ajuste de simulacion</div>
+            
+            <div class="config-section">
+                <label>1. Fuente de Audio</label>
+                <input type="file" id="audioInput" accept="audio/*">
+                <button id="recordBtn" class="btn-record">🎤 Grabar desde Micrófono</button>
+                <audio id="audioPlayback" class="audio-player" controls></audio>
+            </div>
+
+            <div class="config-section">
+                <label>2. Medio de Propagación</label>
+                <select id="mediumSelect">
+                    <option value="343">Aire (Gas) - 343 m/s</option>
+                    <option value="1480">Agua (Líquido) - 1480 m/s</option>
+                    <option value="1320">Aceite (Líquido) - 1320 m/s</option>
+                    <option value="5960">Metal / Acero (Sólido) - 5960 m/s</option>
+                    <option value="5640">Vidrio (Sólido) - 5640 m/s</option>
+                </select>
+            </div>
+
+            <div class="config-section">
+                <label>3. Objeto de Rebote</label>
+                <select id="objectSelect">
+                    <option value="wall">Pared (Sólido)</option>
+                    <option value="rock">Roca (Sólido)</option>
+                    <option value="cloth">Tela (Sólido absorbente)</option>
+                    <option value="water">Agua (Líquido)</option>
+                </select>
+            </div>
+
+            <div class="config-section">
+                <label>4. Distancia (metros)</label>
+                <input type="number" id="distanceInput" value="15" min="0.1" step="0.1">
+            </div>
+
+            <div class="config-section">
+                <label>5. Ángulo de incidencia (°)</label>
+                <input type="number" id="angleInput" value="0" min="0" max="89">
+            </div>
+        </div>
+
+        <div class="viewport-area">
+            <div class="viewport-title">Visualizacion</div>
+            <div class="canvas-container" id="canvasContainer">
+                <canvas id="simCanvas"></canvas>
+                <div class="results-overlay" id="resultsOverlay">
+                    <b>Resultados de Simulación:</b>
+                    Fenómeno: <span id="phenomenonResult">--</span><br>
+                    Tiempo Físico: <span id="timeResult">--</span> s
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-panel">
+        <div class="control-group">
+            <button class="btn-control" id="resetBtn">🔄 Reiniciar</button>
+            <button class="btn-control run" id="runBtn">▶ Iniciar Simulacion</button>
+            <button class="btn-control" id="stopBtn">⏹ Alto</button>
+        </div>
+        <div style="flex-grow: 1;"></div>
+        <div>
+            <span style="color: var(--color-9);">Tiempo de Simulacion:</span>
+            <div class="time-display" id="timeCounter">0.0000</div>
+        </div>
+        <div style="margin-left: 20px;">
+            <span style="color: var(--color-9);";> Escala (m/s):</span> <strong id="scaleDisplay" style="color: #fff;">343</strong>
+        </div>
+    </div>
+    
+    
+</div>
+
+<script>
+    // Configuración de Audio
+    let mediaRecorder;
+    let audioChunks = [];
+    let audioContext;
+    let analyser;
+    let source;
+    
+    // UI Elements
+    const recordBtn = document.getElementById('recordBtn');
+    const audioInput = document.getElementById('audioInput');
+    const audioPlayback = document.getElementById('audioPlayback');
+    const runBtn = document.getElementById('runBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const canvas = document.getElementById('simCanvas');
+    const container = document.getElementById('canvasContainer');
+    const ctx = canvas.getContext('2d');
+    const timeCounter = document.getElementById('timeCounter');
+    const resultsOverlay = document.getElementById('resultsOverlay');
+    const statusText = document.getElementById('statusText');
+
+    let animationId;
+    let isSimulating = false;
+    let simulationStartTime;
+    let totalPropagationTimeSeconds;
+
+    // Paleta de colores mapeada
+    const colors = {
+        eco: "#FF3388",
+        reverb: "#33AAEE",
+        wall: "#9933CC",
+        rock: "#6622BB",
+        cloth: "#CC33AA",
+        water: "#3388DD"
+    };
+
+    // Ajustar Canvas al contenedor Flexsim
+    function resizeCanvas() {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        drawInitialState();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function initAudioContext() {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            source = audioContext.createMediaElementSource(audioPlayback);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+        }
+    }
+
+    // Lógica de Grabación
+    recordBtn.addEventListener('click', async () => {
+        initAudioContext();
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+            mediaRecorder.stop();
+            recordBtn.innerHTML = "🎤 Grabar desde Micrófono";
+            recordBtn.classList.remove('recording');
+            statusText.innerText = "Audio grabado correctamente.";
+        } else {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    audioPlayback.src = URL.createObjectURL(audioBlob);
+                    audioChunks = [];
+                };
+                mediaRecorder.start();
+                recordBtn.innerHTML = "⏹ Detener Grabación";
+                recordBtn.classList.add('recording');
+                statusText.innerText = "Grabando audio...";
+            } catch (err) {
+                alert("Error accediendo al micrófono.");
+            }
+        }
+    });
+
+    audioInput.addEventListener('change', function() {
+        if (this.files[0]) {
+            initAudioContext();
+            audioPlayback.src = URL.createObjectURL(this.files[0]);
+            statusText.innerText = "Archivo de audio cargado.";
+        }
+    });
+
+    // Estado inicial del Canvas (Plano vacío con elementos)
+    function drawInitialState() {
+        if(isSimulating) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const startX = 100;
+        const startY = canvas.height / 2;
+        const objectX = canvas.width - 200;
+        const angle = parseFloat(document.getElementById('angleInput').value) || 0;
+        const angleRad = angle * (Math.PI / 180);
+        const objType = document.getElementById('objectSelect').value;
+
+        // Dibujar Objeto
+        ctx.save();
+        ctx.translate(objectX, canvas.height / 2);
+        ctx.rotate(angleRad);
+        ctx.fillStyle = colors[objType] || "#808080";
+        ctx.fillRect(-10, -canvas.height, 20, canvas.height * 2);
+        ctx.restore();
+
+        // Dibujar Emisor (Estilo Flexsim Node)
+        ctx.fillStyle = "#33AAEE"; // Azul claro de la paleta
+        ctx.fillRect(startX - 15, startY - 15, 30, 30);
+        ctx.fillStyle = "white"; // MODIFICADO PARA MODO OSCURO
+        ctx.font = "11px Arial";
+        ctx.fillText("AudioSource", startX - 30, startY + 30);
+    }
+
+    // Botones de Control Flexsim
+    resetBtn.addEventListener('click', () => {
+        cancelAnimationFrame(animationId);
+        isSimulating = false;
+        if (audioPlayback) {
+            audioPlayback.pause();
+            audioPlayback.currentTime = 0;
+        }
+        timeCounter.textContent = "0.0000";
+        resultsOverlay.style.display = "none";
+        statusText.innerText = "Simulación reiniciada.";
+        drawInitialState();
+    });
+
+    stopBtn.addEventListener('click', () => {
+        cancelAnimationFrame(animationId);
+        isSimulating = false;
+        if (audioPlayback) audioPlayback.pause();
+        statusText.innerText = "Simulación detenida.";
+    });
+
+    runBtn.addEventListener('click', () => {
+        if (isSimulating) return; // Evitar multiples clicks
+        
+        const velocity = parseFloat(document.getElementById('mediumSelect').value);
+        const distance = parseFloat(document.getElementById('distanceInput').value);
+        const angle = parseFloat(document.getElementById('angleInput').value);
+        const objectType = document.getElementById('objectSelect').value;
+
+        document.getElementById('scaleDisplay').innerText = velocity;
+
+        if (audioContext && audioContext.state === 'suspended') audioContext.resume();
+        else initAudioContext();
+
+        totalPropagationTimeSeconds = (2 * distance) / velocity;
+        
+        let phenomenon = totalPropagationTimeSeconds >= 0.1 ? "Eco" : "Reverberación";
+        let colorHex = totalPropagationTimeSeconds >= 0.1 ? colors.eco : colors.reverb;
+
+        document.getElementById('phenomenonResult').innerText = phenomenon;
+        document.getElementById('phenomenonResult').style.color = colorHex;
+        document.getElementById('phenomenonResult').style.fontWeight = "bold";
+        document.getElementById('timeResult').innerText = totalPropagationTimeSeconds.toFixed(4);
+        resultsOverlay.style.display = "block";
+        statusText.innerText = "Simulando propagación acústica en tiempo real...";
+
+        if (audioPlayback.src) {
+            audioPlayback.currentTime = 0;
+            audioPlayback.play();
+        }
+
+        startFlexsimSimulation(velocity, distance, angle, objectType, colorHex);
+    });
+
+    function startFlexsimSimulation(velocity, distance, angle, objectType, phenomenonColor) {
+        cancelAnimationFrame(animationId);
+        isSimulating = true;
+        simulationStartTime = performance.now();
+
+        const startX = 100;
+        const startY = canvas.height / 2;
+        const objectX = canvas.width - 200;
+        const angleRad = angle * (Math.PI / 180);
+        
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        function draw() {
+            if (!isSimulating) return;
+
+            const currentTimeMs = performance.now() - simulationStartTime;
+            const currentTimeSeconds = currentTimeMs / 1000;
+            const progress = Math.min(currentTimeSeconds / totalPropagationTimeSeconds, 1);
+
+            timeCounter.textContent = currentTimeSeconds.toFixed(4);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Objeto Rotado
+            ctx.save();
+            ctx.translate(objectX, canvas.height / 2);
+            ctx.rotate(angleRad);
+            ctx.fillStyle = colors[objectType];
+            ctx.fillRect(-10, -canvas.height, 20, canvas.height * 2);
+            ctx.restore();
+
+            // 2. Nodo Emisor
+            ctx.fillStyle = "#33AAEE";
+            ctx.fillRect(startX - 15, startY - 15, 30, 30);
+            ctx.fillStyle = "white"; // MODIFICADO PARA MODO OSCURO
+            ctx.fillText("AudioSource", startX - 30, startY + 30);
+
+            // 3. Frecuencia Real Analizada
+            analyser.getByteFrequencyData(dataArray);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = phenomenonColor;
+            ctx.beginPath();
+            const sliceWidth = 150 / bufferLength;
+            let xFreq = startX + 25;
+            for(let i = 0; i < bufferLength; i++) {
+                const barHeight = (dataArray[i] / 255) * 80;
+                ctx.moveTo(xFreq, startY);
+                ctx.lineTo(xFreq, startY - barHeight);
+                ctx.lineTo(xFreq, startY + barHeight);
+                xFreq += sliceWidth;
+            }
+            ctx.stroke();
+
+            // 4. Propagación de Ondas (Calculada)
+            let waveRadius;
+            if (progress <= 0.5) {
+                // Ida
+                const normProg = progress / 0.5;
+                waveRadius = normProg * (objectX - startX);
+                
+                ctx.beginPath();
+                ctx.arc(startX, startY, waveRadius, -Math.PI/4, Math.PI/4);
+                ctx.strokeStyle = phenomenonColor;
+                ctx.lineWidth = 4;
+                ctx.stroke();
+            } else {
+                // Vuelta
+                const normProg = (progress - 0.5) / 0.5;
+                ctx.save();
+                ctx.translate(objectX, startY);
+                const reflectionAngleRad = Math.PI - angleRad;
+                waveRadius = normProg * (objectX - startX);
+
+                ctx.beginPath();
+                ctx.arc(0, 0, waveRadius, reflectionAngleRad - Math.PI/4, reflectionAngleRad + Math.PI/4);
+                ctx.strokeStyle = colors.cloth; // Color secundario para el retorno
+                ctx.lineWidth = 4;
+                ctx.stroke();
+                ctx.restore();
+                
+                // Indicador de impacto
+                ctx.fillStyle = phenomenonColor;
+                ctx.beginPath();
+                ctx.arc(objectX, startY, 5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            if (progress < 1) {
+                animationId = requestAnimationFrame(draw);
+            } else {
+                isSimulating = false;
+                statusText.innerText = "Simulación completada (Tiempo agotado).";
+            }
+        }
+        draw();
+    }
+
+    // Inicializar Vista
+    setTimeout(resizeCanvas, 100);
+</script>
+</body>
+</html>
